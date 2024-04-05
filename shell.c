@@ -126,3 +126,21 @@ void cp(char** args) {
     CloseHandle(dstFile);
     printf("\033[1;32mFile '%s' copied to '%s'.\033[0m\n", args[1], args[2]);
 }
+
+void delete(char** args) {
+    if (args[1] == NULL) {
+        printf("\033[1;31mUsage: delete <file>\033[0m\n");
+        return;
+    }
+
+    if (args[1][0] == '\"' && args[1][strlen(args[1]) - 1] == '\"') {
+        args[1][strlen(args[1]) - 1] = '\0';
+        args[1]++;
+    }
+
+    if (remove(args[1]) != 0) {
+        printf("\033[1;31mError: Could not delete file '%s'.\033[0m\n", args[1]);
+    } else {
+        printf("\033[1;32mFile '%s' deleted successfully.\033[0m\n", args[1]);
+    }
+}
