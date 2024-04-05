@@ -4,6 +4,8 @@
 #include <string.h>
 #include <lmcons.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 void Welcome();
 void getLocation();
@@ -46,6 +48,7 @@ void getLocation() {
         printf("Failed to retrieve username.\n");
     }
 }
+
 char** splitArgument(char* str) {
     char** arguments = (char**)malloc(sizeof(char*) * 100);
     int i = 0;
@@ -59,6 +62,7 @@ char** splitArgument(char* str) {
     arguments[i] = NULL;
     return arguments;
 }
+
 void logout(char* str) {
     char* trimmed = str;
     while (*trimmed == ' ') {
@@ -74,6 +78,7 @@ void logout(char* str) {
         printf("\033[1;31mInvalid command: %s\033[0m\n", str);
     }
 }
+
 void cd(char** args) {
     if (args[1] == NULL) {
         printf("\033[1;31mUsage: cd <directory>\033[0m\n");
@@ -88,4 +93,36 @@ void cd(char** args) {
     if (chdir(args[1]) != 0) {
         printf("\033[1;31mError: Directory '%s' does not exist.\033[0m\n", args[1]);
     }
+}
+void cp(char** args) {
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("\033[1;31mUsage: cp <source> <destination>\033[0m\n");
+        return;
+    }
+
+    HANDLE srcFile = CreateFile(args[1], GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (srcFile == INVALID_HANDLE_VALUE) {
+        printf("\033[1;31mError: Source file '%s' does not exist.\033[0m\n", args[1]);
+        return;
+    }
+
+    HANDLE dstFile = CreateFile(args[2], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (dstFile == INVALID_HANDLE_VALUE) {
+        printf("\033[1;31mError: Could not create destination file '%s'.\033[0m\n", args[2]);
+        CloseHandle(srcFile);
+        return;
+    }
+
+    char buffer[1024];
+    DWORD bytesRead, bytesWritten;
+    while (ReadFile(srcFile, buffer, sizeof(buffer), &bytesRead, NULL) && bytesRead > 0) {
+        if (!WriteFile(dstFile, buffer, bytesRead, &bytesWritten, NULL) || bytesWritten != bytesRead) {
+            printf("\033[1;31mError: Could not write to destination file '%s'.\033[0m\n", args[2]);
+            break;
+        }
+    }
+
+    CloseHandle(srcFile);
+    CloseHandle(dstFile);
+    printf("\033[1;32mFile '%s' copied to '%s'.\033[0m\n", args[1], args[2]);
 }
