@@ -144,3 +144,37 @@ void delete(char** args) {
         printf("\033[1;32mFile '%s' deleted successfully.\033[0m\n", args[1]);
     }
 }
+
+void mypipe(char** args1, char** args2) {
+    int pipefd[2];
+    if (pipe(pipefd) == -1) {
+        printf("\033[1;31mError: Could not create pipe.\033[0m\n");
+        return;
+    }
+
+    pid_t pid = fork();
+    if (pid == -1) {
+        printf("\033[1;31mError: Could not fork process.\033[0m\n");
+        close(pipefd[0]);
+        close(pipefd[1]);
+        return;
+    }
+
+    if (pid == 0) {
+        // Child process
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[0]);
+        close(pipefd[1]);
+        execvp(args1[0], args1);
+        printf("\033[1;31mError: Could not execute command '%s'.\033[0m\n", args1[0]);
+        exit(1);
+    } else {
+        // Parent process
+        dup2(pipefd[0], STDIN_FILENO);
+        close(pipefd[0]);
+        close(pipefd[1]);
+        execvp(args2[0], args2);
+        printf("\033[1;31mError: Could not execute command '%s'.\033[0m\n", args2[0]);
+        exit(1);
+    }
+}
