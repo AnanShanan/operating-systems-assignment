@@ -223,3 +223,25 @@ void echoappend(char** args) {
     close(fd);
     printf("\033[1;32mString '%s' appended to file '%s'.\033[0m\n", args[1], args[2]);
 }
+
+void echowrite(char** args) {
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("\033[1;31mUsage: echowrite <string> > <file>\033[0m\n");
+        return;
+    }
+
+    if (args[2][0] == '\"' && args[2][strlen(args[2]) - 1] == '\"') {
+        args[2][strlen(args[2]) - 1] = '\0';
+        args[2]++;
+    }
+
+    int fd = open(args[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd == -1) {
+        printf("\033[1;31mError: Could not open file '%s'.\033[0m\n", args[2]);
+        return;
+    }
+
+    dprintf(fd, "%s", args[1]);
+    close(fd);
+    printf("\033[1;32mString '%s' written to file '%s'.\033[0m\n", args[1], args[2]);
+}
