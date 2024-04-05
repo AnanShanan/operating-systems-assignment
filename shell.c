@@ -245,3 +245,30 @@ void echowrite(char** args) {
     close(fd);
     printf("\033[1;32mString '%s' written to file '%s'.\033[0m\n", args[1], args[2]);
 }
+
+void readFile(char** args) {
+    if (args[1] == NULL) {
+        printf("\033[1;31mUsage: read <file>\033[0m\n");
+        return;
+    }
+
+    if (args[1][0] == '\"' && args[1][strlen(args[1]) - 1] == '\"') {
+        args[1][strlen(args[1]) - 1] = '\0';
+        args[1]++;
+    }
+
+    HANDLE file = CreateFile(args[1], GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) {
+        printf("\033[1;31mError: Could not open file '%s'.\033[0m\n", args[1]);
+        return;
+    }
+
+    char buffer[1024];
+    DWORD bytesRead;
+    while (ReadFile(file, buffer, sizeof(buffer), &bytesRead, NULL) && bytesRead > 0) {
+        printf("%.*s", (int)bytesRead, buffer);
+    }
+
+    CloseHandle(file);
+    printf("\n");
+}
