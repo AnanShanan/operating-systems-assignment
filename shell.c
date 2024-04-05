@@ -1,4 +1,9 @@
+#include <windows.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <lmcons.h>
+#include <unistd.h>
 
 void Welcome() {
     printf("aSPY//YASa\n");
@@ -18,4 +23,14 @@ void Welcome() {
     printf("sc sccaCY//PCypaapyCP//YSs\n");
     printf("spCPY//////YPSps\n");
     printf("ccaacs\n");
+}
+void getLocation() {
+    char username[UNLEN + 1];
+    DWORD usernameLen = UNLEN + 1;
+
+    if (GetUserName(username, &usernameLen)) {
+        printf("Username: %s\n", username);
+    } else {
+        printf("Failed to retrieve username.\n");
+    }
 }
