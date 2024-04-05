@@ -5,6 +5,17 @@
 #include <lmcons.h>
 #include <unistd.h>
 
+void Welcome();
+void getLocation();
+
+int main() {
+    Welcome();    // Call the Welcome function
+    getLocation();  // Call the getLocation function
+
+    // Your code here
+    return 0;   // Return 0 to indicate successful execution
+}
+
 void Welcome() {
     printf("aSPY//YASa\n");
     printf("apyyyyCY//////////YCa |\n");
@@ -24,6 +35,7 @@ void Welcome() {
     printf("spCPY//////YPSps\n");
     printf("ccaacs\n");
 }
+
 void getLocation() {
     char username[UNLEN + 1];
     DWORD usernameLen = UNLEN + 1;
