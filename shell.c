@@ -74,3 +74,18 @@ void logout(char* str) {
         printf("\033[1;31mInvalid command: %s\033[0m\n", str);
     }
 }
+void cd(char** args) {
+    if (args[1] == NULL) {
+        printf("\033[1;31mUsage: cd <directory>\033[0m\n");
+        return;
+    }
+
+    if (args[1][0] == '\"' && args[1][strlen(args[1]) - 1] == '\"') {
+        args[1][strlen(args[1]) - 1] = '\0';
+        args[1]++;
+    }
+
+    if (chdir(args[1]) != 0) {
+        printf("\033[1;31mError: Directory '%s' does not exist.\033[0m\n", args[1]);
+    }
+}
