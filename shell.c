@@ -59,3 +59,18 @@ char** splitArgument(char* str) {
     arguments[i] = NULL;
     return arguments;
 }
+void logout(char* str) {
+    char* trimmed = str;
+    while (*trimmed == ' ') {
+        trimmed++;
+    }
+    if (strcmp(trimmed, "exit") == 0) {
+        printf("\033[1;32mExiting the shell...\033[0m\n");
+        exit(0);
+    } else if (strncmp(trimmed, "exit ", 5) == 0) {
+        printf("\033[1;32mExiting the shell with code %d...\033[0m\n", atoi(trimmed + 5));
+        exit(atoi(trimmed + 5));
+    } else {
+        printf("\033[1;31mInvalid command: %s\033[0m\n", str);
+    }
+}
