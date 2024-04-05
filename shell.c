@@ -46,3 +46,16 @@ void getLocation() {
         printf("Failed to retrieve username.\n");
     }
 }
+char** splitArgument(char* str) {
+    char** arguments = (char**)malloc(sizeof(char*) * 100);
+    int i = 0;
+    char* token = strtok(str, " ");
+    while (token != NULL) {
+        arguments[i] = (char*)malloc(sizeof(char) * (strlen(token) + 1));
+        strcpy(arguments[i], token);
+        token = strtok(NULL, " ");
+        i++;
+    }
+    arguments[i] = NULL;
+    return arguments;
+}
