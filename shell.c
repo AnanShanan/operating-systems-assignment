@@ -272,3 +272,52 @@ void readFile(char** args) {
     CloseHandle(file);
     printf("\n");
 }
+
+void wordCount(char** args) {
+    if (args[1] == NULL || (strcmp(args[1], "-l") != 0 && strcmp(args[1], "-w") != 0)) {
+        printf("\033[1;31mUsage: wc [-l|-w] <file>\033[0m\n");
+        return;
+    }
+
+    if (args[2] == NULL) {
+        printf("\033[1;31mError: No file specified.\033[0m\n");
+        return;
+    }
+
+    if (args[2][0] == '\"' && args[2][strlen(args[2]) - 1] == '\"') {
+        args[2][strlen(args[2]) - 1] = '\0';
+        args[2]++;
+    }
+
+    HANDLE file = CreateFile(args[2], GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) {
+        printf("\033[1;31mError: Could not open file '%s'.\033[0m\n", args[2]);
+        return;
+    }
+
+    char buffer[1024];
+    DWORD bytesRead;
+    int line_count = 0;
+    int word_count = 0;
+
+    while (ReadFile(file, buffer, sizeof(buffer), &bytesRead, NULL) && bytesRead > 0) {
+        for (DWORD i = 0; i < bytesRead; i++) {
+            if (isspace(buffer[i])) {
+                if (i > 0 && !isspace(buffer[i - 1])) {
+                    word_count++;
+                }
+                if (buffer[i] == '\n') {
+                    line_count++;
+                }
+            }
+        }
+    }
+
+    CloseHandle(file);
+
+    if (strcmp(args[1], "-l") == 0) {
+        printf("\033[1;32m%d\033[0m\n", line_count);
+    } else {
+        printf("\033[1;32m%d\033[0m\n", word_count);
+    }
+}
