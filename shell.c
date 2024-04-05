@@ -178,3 +178,26 @@ void mypipe(char** args1, char** args2) {
         exit(1);
     }
 }
+
+void move(char** args) {
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("\033[1;31mUsage: move <source> <destination>\033[0m\n");
+        return;
+    }
+
+    if (args[1][0] == '\"' && args[1][strlen(args[1]) - 1] == '\"') {
+        args[1][strlen(args[1]) - 1] = '\0';
+        args[1]++;
+    }
+
+    if (args[2][0] == '\"' && args[2][strlen(args[2]) - 1] == '\"') {
+        args[2][strlen(args[2]) - 1] = '\0';
+        args[2]++;
+    }
+
+    if (rename(args[1], args[2]) != 0) {
+        printf("\033[1;31mError: Could not move file '%s' to '%s'.\033[0m\n", args[1], args[2]);
+    } else {
+        printf("\033[1;32mFile '%s' moved to '%s'.\033[0m\n", args[1], args[2]);
+    }
+}
